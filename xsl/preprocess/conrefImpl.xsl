@@ -11,7 +11,7 @@ See the accompanying LICENSE file for applicable license.
   xmlns:ditamsg="http://dita-ot.sourceforge.net/ns/200704/ditamsg" xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:dita-ot="http://dita-ot.sourceforge.net/ns/201007/dita-ot" exclude-result-prefixes="ditamsg conref xs dita-ot">
 
-  <xsl:template match="*[@conref][@conref != ''][not(@conaction)]" priority="10">
+  <xsl:template match="*[$TRANSTYPE = 'eclipsehelp'][@conref][@conref != ''][not(@conaction)]" priority="10">
     <!-- If we have already followed a relative path, pick it up -->
     <xsl:param name="current-relative-path" tunnel="yes" as="xs:string" select="''"/>
     <xsl:param name="conref-source-topicid" tunnel="yes" as="xs:string?"/>
@@ -109,8 +109,7 @@ See the accompanying LICENSE file for applicable license.
       <!-- exportanchors defined in topicmeta-->
       <xsl:when
         test="
-          ($TRANSTYPE = 'eclipsehelp')
-          and (document($EXPORTFILE, /)//file[@name = $FILENAME]/id[@name = $elemid])
+          (document($EXPORTFILE, /)//file[@name = $FILENAME]/id[@name = $elemid])
           and (document($EXPORTFILE, /)//file[@name = $FILENAME]/topicid[@name = $topicid])">
         <!-- just copy -->
         <xsl:copy>
@@ -124,8 +123,7 @@ See the accompanying LICENSE file for applicable license.
       <!-- exportanchors defined in prolog-->
       <xsl:when
         test="
-          ($TRANSTYPE = 'eclipsehelp')
-          and document($EXPORTFILE, /)//file[@name = $FILENAME]/topicid[@name = $topicid]/id[@name = $elemid]">
+          document($EXPORTFILE, /)//file[@name = $FILENAME]/topicid[@name = $topicid]/id[@name = $elemid]">
         <!-- just copy -->
         <xsl:copy>
           <xsl:apply-templates select="@* | node()">
@@ -138,7 +136,7 @@ See the accompanying LICENSE file for applicable license.
       <!-- just has topic id -->
       <xsl:when
         test="
-          empty($elemid) and ($TRANSTYPE = 'eclipsehelp')
+          empty($elemid)
           and (document($EXPORTFILE, /)//file[@name = $FILENAME]/topicid[@name = $topicid]
           or document($EXPORTFILE, /)//file[@name = $FILENAME]/topicid[@name = $topicid]/id[@name = $elemid])">
         <!-- just copy -->
@@ -238,8 +236,7 @@ See the accompanying LICENSE file for applicable license.
                         <!-- XXX it would be good if this could be move higher up -->
                         <xsl:when
                           test="
-                            $TRANSTYPE = 'eclipsehelp'
-                            and empty($topicid) and empty($elemid)
+                            empty($topicid) and empty($elemid)
                             and document($EXPORTFILE, $current-element)//file[@name = $FILENAME]/topicid[@name = $firstTopicId]">
                           <xsl:copy>
                             <xsl:apply-templates select="node()">
